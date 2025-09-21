@@ -1,0 +1,5 @@
+{
+  "name": "AI Internship Advisor",
+  "description": "An AI-based recommendation engine that suggests relevant internships to candidates based on their profile, academic background, interests, and location preferences for the PM Internship Scheme.",
+  "requestFramePermissions": []
+}
