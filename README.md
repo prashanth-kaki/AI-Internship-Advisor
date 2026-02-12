@@ -18,3 +18,20 @@ View your app in AI Studio: https://ai.studio/apps/drive/1ID_byvQ0UE1LXaIyTqc2-s
 2. Set `VITE_GEMINI_API_KEY` in `.env.local` to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Deploy to GitHub Pages
+
+This repository is configured to automatically deploy to GitHub Pages.
+
+### Setup Instructions
+
+1. Go to your repository **Settings** → **Pages**
+2. Under **Source**, select **GitHub Actions**
+3. Push changes to the `main` branch or manually trigger the workflow
+4. Your app will be available at: https://prashanth-kaki.github.io/AI-Internship-Advisor/
+
+### How it works
+
+- The GitHub Actions workflow (`.github/workflows/deploy.yml`) automatically builds and deploys the app
+- The build is configured with the correct base URL in `vite.config.ts`
+- Deployments happen automatically on every push to the `main` branch
