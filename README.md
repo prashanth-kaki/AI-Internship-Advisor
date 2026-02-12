@@ -27,14 +27,14 @@ This repository is configured to automatically deploy to GitHub Pages.
 
 1. Go to your repository **Settings** → **Pages**
 2. Under **Source**, select **GitHub Actions**
-3. Push changes to the `main` branch or manually trigger the workflow
+3. Push changes to your repository default branch or manually trigger the workflow
 4. Your app will be available at: https://prashanth-kaki.github.io/AI-Internship-Advisor/
 
 ### How it works
 
 - The GitHub Actions workflow (`.github/workflows/deploy.yml`) automatically builds and deploys the app
 - The build is configured with the correct base URL in `vite.config.ts`
-- Deployments happen automatically on every push to the `main` branch
+- Deployments happen automatically on pushes to the repository default branch
 
 ### Important Note about API Key
 
@@ -48,3 +48,14 @@ For the GitHub Pages deployment to work with API functionality, you would need t
 - Implement a backend API that securely handles the Gemini API calls
 - Use a different authentication method that doesn't expose keys
 - For now, the site will deploy successfully but the AI recommendations feature will require users to run locally with their own API key
+
+
+## Troubleshooting GitHub Pages blank screen
+
+If the site shows a white screen, the most common cause is that GitHub Pages is serving source files instead of the Vite build output.
+
+- In **Settings → Pages**, set **Source** to **GitHub Actions** (not Deploy from a branch).
+- Ensure the deploy workflow has completed successfully after your latest push.
+- The workflow is branch-name agnostic and deploys from whichever branch is configured as the repository default branch.
+
+When Pages serves the repository root directly, `index.html` points to development entry files and the app will not render in production.
