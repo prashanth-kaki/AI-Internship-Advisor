@@ -35,3 +35,16 @@ This repository is configured to automatically deploy to GitHub Pages.
 - The GitHub Actions workflow (`.github/workflows/deploy.yml`) automatically builds and deploys the app
 - The build is configured with the correct base URL in `vite.config.ts`
 - Deployments happen automatically on every push to the `main` branch
+
+### Important Note about API Key
+
+⚠️ **Security Notice**: The current implementation requires a Gemini API key to be embedded at build time, which is not recommended for public deployments as it exposes the API key in client-side code. 
+
+For the GitHub Pages deployment to work with API functionality, you would need to:
+1. Add `GEMINI_API_KEY` as a repository secret in GitHub Settings → Secrets and variables → Actions
+2. Update the workflow to pass the secret to the build step (not recommended for public repos)
+
+**Better alternatives for production:**
+- Implement a backend API that securely handles the Gemini API calls
+- Use a different authentication method that doesn't expose keys
+- For now, the site will deploy successfully but the AI recommendations feature will require users to run locally with their own API key
