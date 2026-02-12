@@ -10,14 +10,40 @@ View your app in AI Studio: https://ai.studio/apps/drive/1ID_byvQ0UE1LXaIyTqc2-s
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:**  Node.js (version 14 or higher)
 
+### Steps
 
-1. Install dependencies:
-   `npm install`
-2. Set `VITE_GEMINI_API_KEY` in `.env.local` to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/prashanth-kaki/AI-Internship-Advisor.git
+   cd AI-Internship-Advisor
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+   - Copy the example environment file:
+     ```bash
+     cp .env.local.example .env.local
+     ```
+   - Get your Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - Open `.env.local` and replace `your_api_key_here` with your actual API key:
+     ```
+     VITE_GEMINI_API_KEY=your_actual_api_key
+     ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser:**
+   - Navigate to [http://localhost:5173/AI-Internship-Advisor/](http://localhost:5173/AI-Internship-Advisor/)
+   - The app should now be running!
 
 ## Deploy to GitHub Pages
 
