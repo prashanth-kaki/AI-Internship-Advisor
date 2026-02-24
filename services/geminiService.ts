@@ -2,7 +2,11 @@ import { GoogleGenAI, Type } from "@google/genai";
 import type { UserProfile, Internship } from '../types';
 
 function getApiKey(): string {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY;
+  const apiKey =
+    import.meta.env.VITE_GEMINI_API_KEY ||
+    import.meta.env.VITE_API_KEY ||
+    (typeof process !== 'undefined' ? process.env?.API_KEY : undefined) ||
+    (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined);
 
   if (!apiKey) {
     throw new Error('Missing Gemini API key. Set VITE_GEMINI_API_KEY in your environment.');
@@ -65,8 +69,13 @@ export async function getInternshipRecommendations(profile: UserProfile): Promis
       },
     });
 
-    const jsonString = response.text.trim();
-    const result = JSON.parse(jsonString);
+    const jsonString = response.text;
+
+    if (!jsonString) {
+      throw new Error('The AI model returned an empty response. Please try again.');
+    }
+
+    const result = JSON.parse(jsonString.trim());
 
     if (result?.recommendations) {
       return result.recommendations as Internship[];
@@ -75,6 +84,9 @@ export async function getInternshipRecommendations(profile: UserProfile): Promis
     return [];
   } catch (error) {
     console.error('Error calling Gemini API:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
     throw new Error('Failed to fetch recommendations from AI model.');
   }
 }
