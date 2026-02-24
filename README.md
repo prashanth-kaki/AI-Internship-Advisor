@@ -62,18 +62,20 @@ This repository is configured to automatically deploy to GitHub Pages.
 - The build is configured with the correct base URL in `vite.config.ts`
 - Deployments happen automatically on pushes to the repository default branch
 
-### Important Note about API Key
+### Setting Up the API Key for Deployment
 
-⚠️ **Security Notice**: The current implementation requires a Gemini API key to be embedded at build time, which is not recommended for public deployments as it exposes the API key in client-side code. 
+For the GitHub Pages deployment to work with AI recommendations, you need to add your Gemini API key as a repository secret:
 
-For the GitHub Pages deployment to work with API functionality, you would need to:
-1. Add `GEMINI_API_KEY` as a repository secret in GitHub Settings → Secrets and variables → Actions
-2. Update the workflow to pass the secret to the build step (not recommended for public repos)
+1. Go to your repository **Settings** → **Secrets and variables** → **Actions**
+2. Click **New repository secret**
+3. Set the name to `VITE_GEMINI_API_KEY`
+4. Paste your Gemini API key as the value (get one from [Google AI Studio](https://aistudio.google.com/app/apikey))
+5. Click **Add secret**
+6. Trigger a new deployment by pushing a commit or manually running the workflow
 
-**Better alternatives for production:**
-- Implement a backend API that securely handles the Gemini API calls
-- Use a different authentication method that doesn't expose keys
-- For now, the site will deploy successfully but the AI recommendations feature will require users to run locally with their own API key
+The deploy workflow is already configured to pass this secret to the build step. Once set, users will no longer be prompted to enter an API key on the website.
+
+⚠️ **Security Notice**: This embeds the API key in client-side code at build time. For public-facing production apps, consider implementing a backend API that securely handles the Gemini API calls.
 
 
 ## Troubleshooting GitHub Pages blank screen
