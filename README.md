@@ -28,17 +28,26 @@ View your app in AI Studio: https://ai.studio/apps/drive/1ID_byvQ0UE1LXaIyTqc2-s
 3. **Set up environment variables:**
    - Copy the example environment file:
      ```bash
-     cp .env.local.example .env.local
+     cp .env.local.example .env
      ```
    - Get your Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
-   - Open `.env.local` and replace `your_api_key_here` with your actual API key:
+   - Open `.env` and replace `your_api_key_here` with your actual API key:
      ```
-     VITE_GEMINI_API_KEY=your_actual_api_key
+     GEMINI_API_KEY=your_actual_api_key
      ```
 
 4. **Run the development server:**
    ```bash
+   # Start the backend server (in one terminal)
+   npm run server
+
+   # Start the Vite dev server (in another terminal)
    npm run dev
+   ```
+
+   Or for production:
+   ```bash
+   npm start
    ```
 
 5. **Open your browser:**
@@ -64,18 +73,12 @@ This repository is configured to automatically deploy to GitHub Pages.
 
 ### Setting Up the API Key for Deployment
 
-For the GitHub Pages deployment to work with AI recommendations, you need to add your Gemini API key as a repository secret:
+The API key is kept securely on the server side and is never exposed to the browser. Set the `GEMINI_API_KEY` environment variable on your hosting platform (e.g., Render, Railway, or your own server).
 
-1. Go to your repository **Settings** → **Secrets and variables** → **Actions**
-2. Click **New repository secret**
-3. Set the name to `VITE_GEMINI_API_KEY`
-4. Paste your Gemini API key as the value (get one from [Google AI Studio](https://aistudio.google.com/app/apikey))
-5. Click **Add secret**
-6. Trigger a new deployment by pushing a commit or manually running the workflow
-
-The deploy workflow is already configured to pass this secret to the build step. Once set, users will no longer be prompted to enter an API key on the website.
-
-⚠️ **Security Notice**: This embeds the API key in client-side code at build time. For public-facing production apps, consider implementing a backend API that securely handles the Gemini API calls.
+For local production deployment:
+```bash
+GEMINI_API_KEY=your_actual_api_key npm start
+```
 
 
 ## Troubleshooting GitHub Pages blank screen

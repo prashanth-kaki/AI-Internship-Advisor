@@ -1,98 +1,27 @@
-import { GoogleGenAI, Type } from "@google/genai";
 import type { UserProfile, Internship } from '../types';
 
-function getApiKey(userApiKey?: string): string {
-  const apiKey =
-    userApiKey ||
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    import.meta.env.VITE_API_KEY ||
-    (typeof process !== 'undefined' ? process.env?.API_KEY : undefined) ||
-    (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined);
-
-  if (!apiKey) {
-    throw new Error('Missing Gemini API key. Please enter your API key or set VITE_GEMINI_API_KEY in your environment. Get a key at https://aistudio.google.com/app/apikey');
-  }
-
-  return apiKey;
-}
-
-export function hasEnvApiKey(): boolean {
-  return !!(
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    import.meta.env.VITE_API_KEY ||
-    (typeof process !== 'undefined' && (process.env?.API_KEY || process.env?.GEMINI_API_KEY))
-  );
-}
-
-export async function getInternshipRecommendations(profile: UserProfile, apiKey?: string): Promise<Internship[]> {
-  const prompt = `
-    Based on the following user profile, please recommend 3-4 fictional but realistic internships available through the Indian government's PM Internship Scheme. 
-    
-    User Profile:
-    - Education: ${profile.education}
-    - Skills: ${profile.skills}
-    - Sector Interests: ${profile.interests.join(', ')}
-    - Preferred Location: ${profile.location}
-
-    For each internship, provide a title, a relevant government ministry or public sector organization, a location that matches the user's preference, and a short, simple, one-sentence explanation (reason) of why it's a good match.
-  `;
-
+export async function getInternshipRecommendations(profile: UserProfile): Promise<Internship[]> {
   try {
-    const ai = new GoogleGenAI({ apiKey: getApiKey(apiKey) });
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            recommendations: {
-              type: Type.ARRAY,
-              description: 'A list of 3 to 4 internship recommendations.',
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  title: {
-                    type: Type.STRING,
-                    description: 'The title of the internship.',
-                  },
-                  organization: {
-                    type: Type.STRING,
-                    description: 'The name of the organization or ministry offering the internship.',
-                  },
-                  location: {
-                    type: Type.STRING,
-                    description: 'The location of the internship.',
-                  },
-                  reason: {
-                    type: Type.STRING,
-                    description: 'A simple, one-sentence explanation for why this is a good match for the user.',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+    const response = await fetch('/api/recommendations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        education: profile.education,
+        skills: profile.skills,
+        interests: profile.interests,
+        location: profile.location,
+      }),
     });
 
-    const jsonString = response.text;
-
-    if (!jsonString) {
-      throw new Error('The AI model returned an empty response. Please try again.');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.error || 'Failed to fetch recommendations. Please try again.');
     }
 
-    const result = JSON.parse(jsonString.trim());
-
-    if (result?.recommendations) {
-      return result.recommendations as Internship[];
-    }
-
-    return [];
+    const recommendations: Internship[] = await response.json();
+    return recommendations;
   } catch (error) {
-    console.error('Error calling Gemini API:', error);
+    console.error('Error fetching recommendations:', error);
     if (error instanceof Error) {
       throw error;
     }
