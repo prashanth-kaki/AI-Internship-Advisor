@@ -4,7 +4,7 @@ import { InternshipForm } from './components/InternshipForm';
 import { Header } from './components/Header';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { RecommendationCard } from './components/RecommendationCard';
-import { getInternshipRecommendations } from './services/geminiService';
+import { getInternshipRecommendations, hasEnvApiKey } from './services/geminiService';
 import type { UserProfile, Internship } from './types';
 import { SECTOR_INTERESTS, EDUCATION_LEVELS } from './constants';
 import { InfoIcon } from './components/icons/InfoIcon';
@@ -20,6 +20,8 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState<boolean>(true);
+  const [apiKey, setApiKey] = useState<string>('');
+  const envKeyAvailable = hasEnvApiKey();
 
   const handleProfileChange = useCallback(<K extends keyof UserProfile, V extends UserProfile[K]>(key: K, value: V) => {
     setProfile(prev => ({ ...prev, [key]: value }));
@@ -47,7 +49,7 @@ const App: React.FC = () => {
     setShowIntro(false);
 
     try {
-      const result = await getInternshipRecommendations(profile);
+      const result = await getInternshipRecommendations(profile, apiKey);
       setRecommendations(result);
     } catch (err) {
       console.error(err);
@@ -72,6 +74,24 @@ const App: React.FC = () => {
           <p className="text-slate-600 mb-6">
             Tell us about yourself, and our AI will suggest the best opportunities for you from the PM Internship Scheme.
           </p>
+          {!envKeyAvailable && (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <label className="block text-sm font-semibold text-amber-800 mb-2">
+                Gemini API Key
+              </label>
+              <p className="text-xs text-amber-700 mb-2">
+                No API key found in environment. Enter your key below or set <code className="bg-amber-100 px-1 rounded">VITE_GEMINI_API_KEY</code> in your environment. Get a key at{' '}
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">aistudio.google.com</a>.
+              </p>
+              <input
+                type="password"
+                placeholder="Enter your Gemini API key"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="w-full p-3 border border-amber-300 rounded-lg bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
+              />
+            </div>
+          )}
           <InternshipForm 
             profile={profile} 
             onProfileChange={handleProfileChange} 

@@ -1,21 +1,30 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { UserProfile, Internship } from '../types';
 
-function getApiKey(): string {
+function getApiKey(userApiKey?: string): string {
   const apiKey =
+    userApiKey ||
     import.meta.env.VITE_GEMINI_API_KEY ||
     import.meta.env.VITE_API_KEY ||
     (typeof process !== 'undefined' ? process.env?.API_KEY : undefined) ||
     (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined);
 
   if (!apiKey) {
-    throw new Error('Missing Gemini API key. Set VITE_GEMINI_API_KEY in your environment.');
+    throw new Error('Missing Gemini API key. Please enter your API key or set VITE_GEMINI_API_KEY in your environment. Get a key at https://aistudio.google.com/app/apikey');
   }
 
   return apiKey;
 }
 
-export async function getInternshipRecommendations(profile: UserProfile): Promise<Internship[]> {
+export function hasEnvApiKey(): boolean {
+  return !!(
+    import.meta.env.VITE_GEMINI_API_KEY ||
+    import.meta.env.VITE_API_KEY ||
+    (typeof process !== 'undefined' && (process.env?.API_KEY || process.env?.GEMINI_API_KEY))
+  );
+}
+
+export async function getInternshipRecommendations(profile: UserProfile, apiKey?: string): Promise<Internship[]> {
   const prompt = `
     Based on the following user profile, please recommend 3-4 fictional but realistic internships available through the Indian government's PM Internship Scheme. 
     
@@ -29,7 +38,7 @@ export async function getInternshipRecommendations(profile: UserProfile): Promis
   `;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: getApiKey() });
+    const ai = new GoogleGenAI({ apiKey: getApiKey(apiKey) });
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
