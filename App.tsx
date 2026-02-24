@@ -49,7 +49,7 @@ const App: React.FC = () => {
     setShowIntro(false);
 
     try {
-      const result = await getInternshipRecommendations(profile, apiKey || undefined);
+      const result = await getInternshipRecommendations(profile, apiKey);
       setRecommendations(result);
     } catch (err) {
       console.error(err);
