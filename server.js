@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI, Type } from '@google/genai';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
@@ -16,6 +17,14 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
+});
+
 // Serve static frontend files from the Vite build output
 app.use(express.static(path.join(__dirname, 'dist')));
 
@@ -27,12 +36,12 @@ function getApiKey() {
   return apiKey;
 }
 
-app.post('/api/recommendations', async (req, res) => {
+app.post('/api/recommendations', apiLimiter, async (req, res) => {
   try {
     const { education, skills, interests, location } = req.body;
 
-    if (!skills || !interests || !Array.isArray(interests) || interests.length === 0 || !location) {
-      return res.status(400).json({ error: 'Please provide all required fields: skills, interests, and location.' });
+    if (!education || !skills || !interests || !Array.isArray(interests) || interests.length === 0 || !location) {
+      return res.status(400).json({ error: 'Please provide all required fields: education, skills, interests, and location.' });
     }
 
     const prompt = `
@@ -103,7 +112,7 @@ app.post('/api/recommendations', async (req, res) => {
 });
 
 // Fallback: serve the frontend for any non-API routes (SPA support)
-app.get('/{*splat}', (_req, res) => {
+app.get('/{*splat}', apiLimiter, (_req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
