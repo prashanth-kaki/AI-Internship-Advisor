@@ -51,8 +51,8 @@ const App: React.FC = () => {
       setRecommendations(result);
     } catch (err) {
       console.error(err);
-      if (err instanceof Error && err.message) {
-        setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message || 'Sorry, we encountered an issue while generating recommendations. Please try again.');
       } else {
         setError('Sorry, we encountered an issue while generating recommendations. Please try again.');
       }

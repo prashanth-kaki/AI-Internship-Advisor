@@ -5,8 +5,8 @@ function getApiKey(): string {
   const apiKey =
     import.meta.env.VITE_GEMINI_API_KEY ||
     import.meta.env.VITE_API_KEY ||
-    (typeof process !== 'undefined' && process.env?.API_KEY) ||
-    (typeof process !== 'undefined' && process.env?.GEMINI_API_KEY);
+    (typeof process !== 'undefined' ? process.env?.API_KEY : undefined) ||
+    (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined);
 
   if (!apiKey) {
     throw new Error('Missing Gemini API key. Set VITE_GEMINI_API_KEY in your environment.');
